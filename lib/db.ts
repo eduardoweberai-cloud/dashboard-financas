@@ -74,6 +74,33 @@ export const transactionService = {
     if (error) throw new Error(`Failed to insert transactions: ${error.message}`);
     return data as Transaction[];
   },
+
+  async upsert(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) {
+    // Upsert using date, category, and type as unique key
+    // This prevents duplicates when the same transaction is synced multiple times
+    const { data, error } = await supabase
+      .from('transactions')
+      .upsert([transaction], {
+        onConflict: 'date,category,type',
+      })
+      .select()
+      .single();
+
+    if (error) throw new Error(`Failed to upsert transaction: ${error.message}`);
+    return data as Transaction;
+  },
+
+  async upsertBatch(transactions: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>[]) {
+    const { data, error } = await supabase
+      .from('transactions')
+      .upsert(transactions, {
+        onConflict: 'date,category,type',
+      })
+      .select();
+
+    if (error) throw new Error(`Failed to upsert transactions: ${error.message}`);
+    return data as Transaction[];
+  },
 };
 
 /**
@@ -99,6 +126,44 @@ export const budgetService = {
 
     if (error) throw new Error(`Failed to insert budget: ${error.message}`);
     return data as MonthlyBudget;
+  },
+
+  async insertBatch(budgets: Omit<MonthlyBudget, 'id' | 'created_at' | 'updated_at'>[]) {
+    const { data, error } = await supabase
+      .from('monthly_budgets')
+      .insert(budgets)
+      .select();
+
+    if (error) throw new Error(`Failed to insert budgets: ${error.message}`);
+    return data as MonthlyBudget[];
+  },
+
+  async deleteByMonth(month: string) {
+    const { error } = await supabase
+      .from('monthly_budgets')
+      .delete()
+      .eq('month', month);
+
+    if (error) throw new Error(`Failed to delete budgets: ${error.message}`);
+  },
+
+  async deleteAll() {
+    const { error } = await supabase
+      .from('monthly_budgets')
+      .delete()
+      .neq('id', ''); // Delete all rows
+
+    if (error) throw new Error(`Failed to delete all budgets: ${error.message}`);
+  },
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('monthly_budgets')
+      .select('*')
+      .order('month', { ascending: true });
+
+    if (error) throw new Error(`Failed to fetch all budgets: ${error.message}`);
+    return data as MonthlyBudget[];
   },
 };
 
