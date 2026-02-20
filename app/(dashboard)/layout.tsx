@@ -1,4 +1,5 @@
 import React from 'react'
+import { ChatWidgetContainer } from '@/components/dashboard/ChatWidgetContainer'
 
 export default function DashboardLayout({
   children,
@@ -31,6 +32,9 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
+
+      {/* Chat Widget */}
+      <ChatWidgetContainer />
 
       {/* Footer */}
       <footer className="border-t border-border bg-background/95 py-6">
