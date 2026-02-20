@@ -111,3 +111,27 @@ export function calculateGoalRemaining(
 ): number {
   return goal - achieved
 }
+
+/**
+ * Calcula horas desde a última sincronização bem-sucedida
+ * @param syncDate Data/hora da última sincronização (ISO string)
+ * @returns Número de horas desde então
+ */
+export function calculateHoursSinceSync(syncDate: string): number {
+  const lastSyncTime = new Date(syncDate).getTime();
+  const nowTime = new Date().getTime();
+  const diffMs = nowTime - lastSyncTime;
+  return Math.floor(diffMs / (1000 * 60 * 60));
+}
+
+/**
+ * Determina cor da badge baseada em horas desde sincronização
+ * Amarelo: 24-48h, Vermelho: > 48h
+ * @param hoursSince Horas desde última sincronização bem-sucedida
+ * @returns Cor: 'yellow' | 'red' | null (null = sincronização OK)
+ */
+export function getStatusColor(hoursSince: number): 'yellow' | 'red' | null {
+  if (hoursSince > 48) return 'red';
+  if (hoursSince >= 24) return 'yellow';
+  return null; // Sincronização OK
+}

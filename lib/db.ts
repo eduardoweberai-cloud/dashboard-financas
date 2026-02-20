@@ -262,6 +262,36 @@ export const syncService = {
     }
     return data as SyncLog | null;
   },
+
+  async getLastSuccessfulSync() {
+    const { data, error } = await supabase
+      .from('sync_log')
+      .select('*')
+      .eq('status', 'success')
+      .order('completed_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw new Error(`Failed to fetch last successful sync: ${error.message}`);
+    }
+    return data as SyncLog | null;
+  },
+
+  async getLastErrorSync() {
+    const { data, error } = await supabase
+      .from('sync_log')
+      .select('*')
+      .eq('status', 'error')
+      .order('completed_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw new Error(`Failed to fetch last error sync: ${error.message}`);
+    }
+    return data as SyncLog | null;
+  },
 };
 
 /**

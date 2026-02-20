@@ -5,6 +5,7 @@ import { usePeriod } from '@/hooks/usePeriod';
 import { PeriodButtons } from './PeriodButtons';
 import { PeriodSelector } from './PeriodSelector';
 import { SyncButton } from './SyncButton';
+import { SyncErrorBadge } from './SyncErrorBadge';
 import { Period, PeriodType } from '@/lib/types';
 
 export function DashboardHeader() {
@@ -53,6 +54,10 @@ export function DashboardHeader() {
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end mb-2">
+        <SyncErrorBadge />
+      </div>
+
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Bem-vindo ao Dashboard</h2>
