@@ -69,3 +69,64 @@ export interface GoogleSheetsConfig {
 export interface SheetRow {
   [key: string]: unknown;
 }
+
+/**
+ * Period Types - Para seletor de período
+ */
+export type PeriodType = 'mensal' | 'trimestral' | 'semestral' | 'anual';
+
+export interface Period {
+  type: PeriodType;
+  value: string; // YYYY-MM para mensal, QX para trimestral, etc
+  label: string; // Label em português
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+}
+
+export interface PeriodContextType {
+  currentPeriod: Period;
+  setPeriod: (period: Period) => void;
+  availablePeriods: {
+    mensal: Period[];
+    trimestral: Period[];
+    semestral: Period[];
+    anual: Period[];
+  };
+}
+
+/**
+ * KPI Types - Para cards de métricas
+ */
+export interface KPIData {
+  realized: number;     // Valor realizado
+  projected: number;    // Valor projetado
+  previousPeriod: number; // Valor do período anterior
+}
+
+export interface KPI {
+  label: string;           // "Receitas", "Despesas", "Saldo"
+  data: KPIData;
+  percentage: number;      // % realização
+  percentageColor: 'green' | 'yellow' | 'red'; // Cor baseada em %
+  variation: number;       // % variação vs período anterior
+  variationDirection: 'up' | 'down'; // Seta para cima ou baixo
+}
+
+export interface DashboardData {
+  receitas: KPIData;
+  despesas: KPIData;
+  saldo: KPIData;
+  period: {
+    current: string; // YYYY-MM
+    previous: string; // YYYY-MM
+  };
+}
+
+/**
+ * Top Movements Types - Para Top 5 Gastos e Entradas
+ */
+export interface TopMovement {
+  category: string;
+  amount: number;
+  type: 'income' | 'expense';
+}

@@ -1,105 +1,110 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
+import { KPISection } from '@/components/dashboard/KPISection'
+import { TopMovements } from '@/components/dashboard/TopMovements'
 
 export default function DashboardPage() {
   return (
     <div className="space-y-8">
-      {/* Page Title */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Bem-vindo ao Dashboard</h2>
-        <p className="text-muted-foreground mt-2">
-          Visualize e analise seus dados financeiros em tempo real.
-        </p>
-      </div>
+      {/* Period Selector Header */}
+      <DashboardHeader />
 
-      {/* KPI Cards - Responsive Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Receitas Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receitas</CardTitle>
-            <Badge>+12%</Badge>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R$ 45.231,89</div>
-            <p className="text-xs text-muted-foreground">+2.573 vs. mês anterior</p>
-          </CardContent>
-        </Card>
+      {/* KPI Cards - Receitas, Despesas, Saldo */}
+      <KPISection />
 
-        {/* Despesas Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Despesas</CardTitle>
-            <Badge variant="secondary">-5%</Badge>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R$ 32.415,50</div>
-            <p className="text-xs text-muted-foreground">-1.234 vs. mês anterior</p>
-          </CardContent>
-        </Card>
-
-        {/* Saldo Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saldo</CardTitle>
-            <Badge variant="outline">Em dia</Badge>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R$ 12.816,39</div>
-            <p className="text-xs text-muted-foreground">Saldo atual da conta</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Progress Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Meta Mensal</CardTitle>
-          <CardDescription>
-            Progresso em relação à sua meta de receita do mês
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Receitas</span>
-              <span className="text-sm font-semibold">75%</span>
-            </div>
-            <Progress value={75} />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Despesas</span>
-              <span className="text-sm font-semibold">45%</span>
-            </div>
-            <Progress value={45} />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Sample Component Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Top 5 Categorias</CardTitle>
-          <CardDescription>
-            Suas principais categorias de despesa este mês
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Lazer'].map((category, index) => (
-              <div key={category} className="flex items-center justify-between py-2 border-b last:border-0">
-                <span className="text-sm font-medium">{category}</span>
-                <Badge variant="secondary">
-                  {(100 - index * 15)}%
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Top Movements Tables */}
+      <TopMovements
+        transactions={[
+          {
+            id: '1',
+            date: '2026-02-01',
+            description: 'Supermercado',
+            amount: 450.50,
+            category: 'Alimentação',
+            type: 'expense',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-01T10:00:00Z',
+            updated_at: '2026-02-01T10:00:00Z',
+          },
+          {
+            id: '2',
+            date: '2026-02-05',
+            description: 'Salário',
+            amount: 5500.00,
+            category: 'Salário',
+            type: 'income',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-05T10:00:00Z',
+            updated_at: '2026-02-05T10:00:00Z',
+          },
+          {
+            id: '3',
+            date: '2026-02-10',
+            description: 'Aluguel',
+            amount: 1800.00,
+            category: 'Moradia',
+            type: 'expense',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-10T10:00:00Z',
+            updated_at: '2026-02-10T10:00:00Z',
+          },
+          {
+            id: '4',
+            date: '2026-02-12',
+            description: 'Uber',
+            amount: 120.30,
+            category: 'Transporte',
+            type: 'expense',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-12T10:00:00Z',
+            updated_at: '2026-02-12T10:00:00Z',
+          },
+          {
+            id: '5',
+            date: '2026-02-15',
+            description: 'Freelance',
+            amount: 1200.00,
+            category: 'Freelance',
+            type: 'income',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-15T10:00:00Z',
+            updated_at: '2026-02-15T10:00:00Z',
+          },
+          {
+            id: '6',
+            date: '2026-02-18',
+            description: 'Academia',
+            amount: 150.00,
+            category: 'Saúde',
+            type: 'expense',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-18T10:00:00Z',
+            updated_at: '2026-02-18T10:00:00Z',
+          },
+          {
+            id: '7',
+            date: '2026-02-20',
+            description: 'Restaurante',
+            amount: 85.50,
+            category: 'Alimentação',
+            type: 'expense',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-20T10:00:00Z',
+            updated_at: '2026-02-20T10:00:00Z',
+          },
+          {
+            id: '8',
+            date: '2026-02-22',
+            description: 'Dividendos',
+            amount: 300.00,
+            category: 'Investimentos',
+            type: 'income',
+            source_sheet: 'Lancamentos2026',
+            created_at: '2026-02-22T10:00:00Z',
+            updated_at: '2026-02-22T10:00:00Z',
+          },
+        ]}
+      />
 
       {/* Action Buttons */}
       <div className="flex gap-4 flex-col sm:flex-row">
