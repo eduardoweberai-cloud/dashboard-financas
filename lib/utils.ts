@@ -76,3 +76,38 @@ export function getTopMovements(
 
   return sorted
 }
+
+/**
+ * Calcula progresso de uma meta (percentual)
+ * @example calculateGoalProgress(12500, 10000) => 125
+ */
+export function calculateGoalProgress(
+  achieved: number,
+  goal: number
+): number {
+  if (goal === 0) return 0
+  return (achieved / goal) * 100
+}
+
+/**
+ * Determina cor baseada no progresso da meta
+ * Verde >= 80%, Amarelo 60-79%, Vermelho < 60%
+ */
+export function getGoalStatusColor(
+  progress: number
+): 'green' | 'yellow' | 'red' {
+  if (progress >= 80) return 'green'
+  if (progress >= 60) return 'yellow'
+  return 'red'
+}
+
+/**
+ * Calcula saldo restante para atingir a meta
+ * Valor positivo = faltam, negativo = acima da meta
+ */
+export function calculateGoalRemaining(
+  achieved: number,
+  goal: number
+): number {
+  return goal - achieved
+}
