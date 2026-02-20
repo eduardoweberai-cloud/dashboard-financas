@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { GoalProgressBar } from './GoalProgressBar'
+import { metasService } from '@/lib/db'
 import type { Transaction } from '@/lib/types'
 
 interface GoalsSectionProps {
@@ -11,8 +12,8 @@ interface GoalsSectionProps {
 
 /**
  * GoalsSection - Container com 2 progress bars:
- * 1. Meta Mensal: Receitas - Despesas do período
- * 2. Meta Anual: Progresso de economia YTD (R$ 50k)
+ * 1. Meta Mensal: Receitas - Despesas do período (% configurável)
+ * 2. Meta Anual: Progresso de economia YTD (do DB ou fallback)
  */
 export function GoalsSection({
   transactions,
@@ -22,6 +23,12 @@ export function GoalsSection({
   const [annualGoal, setAnnualGoal] = useState(0)
   const [monthlyAchieved, setMonthlyAchieved] = useState(0)
   const [annualAchieved, setAnnualAchieved] = useState(0)
+
+  // Validar inputs e garantir valores >= 0
+  const validateAmount = (value: number): number => {
+    if (!Number.isFinite(value) || value < 0) return 0
+    return value
+  }
 
   useEffect(() => {
     // Extrair ano-mês
@@ -33,42 +40,67 @@ export function GoalsSection({
       return tDate === currentPeriod
     })
 
-    const monthlyIncome = monthlyTransactions
-      .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0)
+    const monthlyIncome = validateAmount(
+      monthlyTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0)
+    )
 
-    const monthlyExpenses = monthlyTransactions
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0)
+    const monthlyExpenses = validateAmount(
+      monthlyTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0)
+    )
 
     const monthlyBalance = monthlyIncome - monthlyExpenses
 
-    // Meta Mensal é baseada na expectativa (usar média histórica ou valor fixo)
-    // Para MVP, usar 70% das receitas como meta de economia
-    const monthlyGoalValue = monthlyIncome * 0.7
+    // Meta Mensal: usar % configurável das receitas (env var ou 70% default)
+    const monthlyPercentage =
+      parseFloat(process.env.NEXT_PUBLIC_GOALS_MONTHLY_PERCENTAGE || '0.7') || 0.7
+    const monthlyGoalValue = monthlyIncome * monthlyPercentage
 
-    setMonthlyAchieved(Math.max(monthlyBalance, 0))
-    setMonthlyGoal(monthlyGoalValue)
+    setMonthlyAchieved(validateAmount(monthlyBalance))
+    setMonthlyGoal(validateAmount(monthlyGoalValue))
 
-    // Meta Anual: YTD (Year-to-date) vs R$ 50.000
+    // Meta Anual: YTD (Year-to-date) vs DB ou fallback
     const ytdTransactions = transactions.filter(t => {
       const tYear = t.date.substring(0, 4) // YYYY
       return tYear === year
     })
 
-    const ytdIncome = ytdTransactions
-      .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0)
+    const ytdIncome = validateAmount(
+      ytdTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0)
+    )
 
-    const ytdExpenses = ytdTransactions
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0)
+    const ytdExpenses = validateAmount(
+      ytdTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0)
+    )
 
     const ytdBalance = ytdIncome - ytdExpenses
-    const annualGoalValue = 50000 // Meta anual fixo: R$ 50k
 
-    setAnnualAchieved(Math.max(ytdBalance, 0))
-    setAnnualGoal(annualGoalValue)
+    // Buscar meta anual do DB, com fallback para env var
+    const loadAnnualGoal = async () => {
+      try {
+        const dbGoal = await metasService.getAnnualGoal(year)
+        if (dbGoal?.target_amount) {
+          return validateAmount(dbGoal.target_amount)
+        }
+      } catch (error) {
+        console.warn('Failed to fetch annual goal from DB:', error)
+      }
+      // Fallback: usar env var ou 50000
+      const envGoal = process.env.NEXT_PUBLIC_GOALS_ANNUAL_TARGET
+      return validateAmount(parseFloat(envGoal || '50000') || 50000)
+    }
+
+    loadAnnualGoal().then(goalValue => {
+      setAnnualAchieved(validateAmount(ytdBalance))
+      setAnnualGoal(goalValue)
+    })
   }, [transactions, currentPeriod])
 
   return (

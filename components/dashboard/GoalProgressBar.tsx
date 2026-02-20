@@ -28,8 +28,27 @@ export function GoalProgressBar({
   goal,
   type = 'monthly'
 }: GoalProgressBarProps) {
-  const progress = calculateGoalProgress(achieved, goal)
-  const remaining = calculateGoalRemaining(achieved, goal)
+  // Validar inputs: garantir valores não-negativos e finitos
+  const validAchieved = Number.isFinite(achieved) && achieved >= 0 ? achieved : 0
+  const validGoal = Number.isFinite(goal) && goal > 0 ? goal : 0
+
+  // Se meta é 0, renderizar com valores zerados
+  if (validGoal === 0) {
+    return (
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-600">{label}</h3>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            {type === 'monthly' ? 'Mensal' : 'Anual'}
+          </span>
+        </div>
+        <p className="text-sm text-gray-500">Nenhuma meta configurada</p>
+      </div>
+    )
+  }
+
+  const progress = calculateGoalProgress(validAchieved, validGoal)
+  const remaining = calculateGoalRemaining(validAchieved, validGoal)
   const statusColor = getGoalStatusColor(progress)
 
   // Cores para status
@@ -79,7 +98,7 @@ export function GoalProgressBar({
               : `Acima: ${formatCurrency(Math.abs(remaining))}`}
           </p>
           <p className="text-xs text-gray-500">
-            {formatCurrency(achieved)} / {formatCurrency(goal)}
+            {formatCurrency(validAchieved)} / {formatCurrency(validGoal)}
           </p>
         </div>
         <span

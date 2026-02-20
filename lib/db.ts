@@ -181,6 +181,20 @@ export const metasService = {
     return data as Meta[];
   },
 
+  async getAnnualGoal(year: string) {
+    const { data, error } = await supabase
+      .from('metas')
+      .select('*')
+      .eq('type', 'annual')
+      .eq('month', year) // Store year as YYYY in month field
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw new Error(`Failed to fetch annual goal: ${error.message}`);
+    }
+    return data as Meta | null;
+  },
+
   async insert(meta: Omit<Meta, 'id' | 'created_at' | 'updated_at'>) {
     const { data, error } = await supabase
       .from('metas')
