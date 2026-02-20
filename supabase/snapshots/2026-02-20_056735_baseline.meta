@@ -1,0 +1,18 @@
+{
+  "snapshot": "2026-02-20_056735_baseline.sql",
+  "label": "baseline",
+  "timestamp": "2026-02-20_056735",
+  "created_at": "2026-02-20T15:24:16.790Z",
+  "project_id": "jictijobzwhzzwmrljwr",
+  "database": "postgres",
+  "file_size": 953,
+  "purpose": "Baseline snapshot before applying initial migration",
+  "restore_command": "psql \"postgresql://postgres.jictijobzwhzzwmrljwr:***@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require\" -f \"supabase/snapshots/2026-02-20_056735_baseline.sql\"",
+  "cli_restore_command": "*rollback supabase/snapshots/2026-02-20_056735_baseline.sql",
+  "rollback_notes": [
+    "This is a baseline snapshot of an empty schema",
+    "It captures the initial state before any migrations",
+    "Restore if initial migration fails",
+    "Use *rollback command to restore automatically"
+  ]
+}
