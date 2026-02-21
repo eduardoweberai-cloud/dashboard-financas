@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { PeriodProvider } from '@/context/PeriodContext'
-import { ToastContainer } from '@/components/ui/toast'
+// TODO: Import after Story 2.1 (Layout Base) is implemented
+// import { PeriodProvider } from '@/context/PeriodContext'
+// import { ToastContainer } from '@/components/ui/toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,10 +21,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={inter.className}>
-        <PeriodProvider>
-          {children}
-          <ToastContainer />
-        </PeriodProvider>
+        {/* TODO: Wrap with PeriodProvider after Story 2.3 */}
+        {children}
+        {/* TODO: Add ToastContainer after Story 2.1 */}
       </body>
     </html>
   )

@@ -8,13 +8,19 @@ import type { Transaction, MonthlyBudget, Meta, ChatMessage, SyncLog } from './t
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Create Supabase client
+// Create Supabase client (anon for regular operations)
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Create service role client for operations that need to bypass RLS (like sync logging)
+export const supabaseServiceRole = supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : null;
 
 /**
  * Transaction operations
@@ -238,9 +244,12 @@ export const chatService = {
  * Sync operations
  */
 export const syncService = {
-  async logSync(log: Omit<SyncLog, 'id'>) {
-    const { data, error } = await supabase
-      .from('sync_log')
+  async logSync(log: Omit<SyncLog, 'id' | 'created_at'>) {
+    // Use service role client if available (bypasses RLS for sync logging)
+    const client = supabaseServiceRole || supabase;
+
+    const { data, error } = await client
+      .from('sync_logs')
       .insert([log])
       .select()
       .single();
@@ -251,7 +260,7 @@ export const syncService = {
 
   async getLastSync() {
     const { data, error } = await supabase
-      .from('sync_log')
+      .from('sync_logs')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(1)
@@ -265,7 +274,7 @@ export const syncService = {
 
   async getLastSuccessfulSync() {
     const { data, error } = await supabase
-      .from('sync_log')
+      .from('sync_logs')
       .select('*')
       .eq('status', 'success')
       .order('completed_at', { ascending: false })
@@ -280,9 +289,9 @@ export const syncService = {
 
   async getLastErrorSync() {
     const { data, error } = await supabase
-      .from('sync_log')
+      .from('sync_logs')
       .select('*')
-      .eq('status', 'error')
+      .eq('status', 'failed')
       .order('completed_at', { ascending: false })
       .limit(1)
       .single();

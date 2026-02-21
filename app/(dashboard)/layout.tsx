@@ -1,5 +1,6 @@
 import React from 'react'
-import { ChatWidgetContainer } from '@/components/dashboard/ChatWidgetContainer'
+// TODO: Import after Story 2.1 (PeriodProvider) is implemented
+// import { ChatWidgetContainer } from '@/components/dashboard/ChatWidgetContainer'
 
 export default function DashboardLayout({
   children,
@@ -34,7 +35,8 @@ export default function DashboardLayout({
       </main>
 
       {/* Chat Widget */}
-      <ChatWidgetContainer />
+      {/* TODO: Re-enable after Story 2.1 (PeriodProvider) is implemented */}
+      {/* <ChatWidgetContainer /> */}
 
       {/* Footer */}
       <footer className="border-t border-border bg-background/95 py-6">
